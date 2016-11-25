@@ -2,6 +2,10 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from ecommerce.models import Product, Payment, Order, Order_Product, Customer
 
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseBadRequest
+from django.contrib.auth.models import User
+
 
 def index(request):
     return HttpResponse("Hello, world. You're at the ecommerce index.")
@@ -46,3 +50,28 @@ def order_execute(request):
 def product_list(request):
     products = Product.objects.all()
     return render(request, 'product_list.html', {'products': products})
+
+def create_user_form(request):
+
+    return render(
+        request,
+        'registration/create_user_form.html',
+    )
+
+
+def create_user(request):
+
+    username = request.POST['username']
+    password = request.POST['password']
+
+    if not username or not password:
+        return HttpResponseBadRequest()
+
+    if User.objects.filter(username=username).exists():
+        return HttpResponseBadRequest()
+
+    user = User.objects.create_user(username, '', password)
+    user.save()
+
+    return render_to_response('registration/create_user_complete.html')
+
