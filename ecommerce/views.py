@@ -10,6 +10,18 @@ from django.contrib.auth.models import User
 def index(request):
     return HttpResponse("Hello, world. You're at the ecommerce index.")
 
+def cart_list(request):
+  """
+  カートに入っている商品情報を表示する
+  """
+  if not request.session.has_key('cart'):
+    request.session['cart'] = list()
+  cart = request.session['cart']
+
+  products = Product.objects.filter(id__in=cart)
+  context = {'products': products}
+  return render(request, 'cart_list.html', context)
+
 
 @login_required
 def order_form(request):

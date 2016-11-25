@@ -24,4 +24,4 @@ urlpatterns = [
     url(r'^accounts/login/$', auth_views.login),
     url(r'^accounts/create_user_form$', create_user_form),
     url(r'^accounts/create_user$', create_user),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
