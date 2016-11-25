@@ -16,11 +16,12 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
+from ecommerce.views import create_user_form, create_user
 
 urlpatterns = [
     url(r'^ecommerce/', include('ecommerce.urls')),
     url(r'^admin/', admin.site.urls),
     url(r'^accounts/login/$', auth_views.login),
-    url(r'^accounts/create_user_form$', views.create_user_form),
-    url(r'^accounts/create_user$', views.create_user),
+    url(r'^accounts/create_user_form$', create_user_form),
+    url(r'^accounts/create_user$', create_user),
 ]
