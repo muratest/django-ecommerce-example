@@ -188,3 +188,17 @@ def create_user(request):
     user.save()
 
     return render(request, 'registration/create_user_complete.html')
+
+def order_history(request):
+    # セッションからログインしているカスタマIDを持ってくる
+    customerId = 1
+    orderProducts = Order_Product.objects.select_related().filter(order__customer=customerId).order_by('order').all()
+
+    results = {}
+    for orderProduct in orderProducts:
+        order = orderProduct.order.id
+        if order not in results:
+            results[order] = []
+        results[order].append(orderProduct)
+    return render(request, 'order_history.html',
+        {'results': results})
