@@ -11,5 +11,7 @@ urlpatterns = [
     url(r'^order_execute/$', views.order_execute, name='order_execute'),
     url(r'^products/$', views.product_list, name='product_list'),
     url(r'^order_history/$', views.order_history, name='order_history'),
+    url(r'^login/$', views.login, name='login'),
+    url(r'^logout/$', views.logout, name='logout'),
 
 ]

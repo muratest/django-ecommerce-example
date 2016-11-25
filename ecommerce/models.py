@@ -46,6 +46,7 @@ class Order(models.Model):
     created_at = models.DateTimeField("作成日時", auto_now_add=True)
     updated_at = models.DateTimeField("更新日時", auto_now=True)
     customer = models.ForeignKey("Customer")
+    username = models.CharField("ユーザー名", max_length=64)
     payment = models.ForeignKey("Payment")
     products = models.ManyToManyField(Product, through=Order_Product)
 

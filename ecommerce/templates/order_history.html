@@ -1,6 +1,7 @@
 <div>
 {% if results %}
     <div>
+    <p>{{ username }}さまの購入履歴</p>
     {% for key, result in results.items %}
     <p>注文日時：{{ result.0.order.ordered_at|date:"Y/m/d H:i:s" }}</p>
     <p>決済方法：{{ result.0.order.payment }}</p>

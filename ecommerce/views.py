@@ -134,7 +134,7 @@ def order_form(request):
 
     return render(request, 'order.html', {'products': products, 'payments': payments})
 
-
+@login_required
 def order_execute(request):
     if request.method != 'POST':
         return HttpResponse('Bad request')
@@ -142,14 +142,19 @@ def order_execute(request):
     # 決済方法をPOSTリクエストから取得
     payment = Payment.objects.get(id=request.POST['payment'])
 
-    # あとでセッションから一覧持ってくる
-    products = Product.objects.all()
+    products = []
+    for item_id in request.session['cart']:
+        items = Product.objects.get(id=int(item_id))
+        products.append(items)
+    
     customer = Customer.objects.get(first_name='a', last_name='a')
+
+    username = request.user.username
 
     payment = Payment.objects.get(id=int(request.POST['payment']))
 
     # 注文作成
-    order = Order.objects.create(customer=customer, payment=payment)
+    order = Order.objects.create(customer=customer, payment=payment, username=username)
 
     for product in products:
         # 注文対象商品をとりあえず1個ずつ持ってきて注文と関連づけ
@@ -191,8 +196,17 @@ def create_user(request):
 
 def order_history(request):
     # セッションからログインしているカスタマIDを持ってくる
-    customerId = 1
-    orderProducts = Order_Product.objects.select_related().filter(order__customer=customerId).order_by('order').all()
+    #customerId = 1
+    if request.user.username == '':
+        return HttpResponse("ログインしてください")
+    
+    print(request.user.username)
+    #customerId = Customer.objects.get(username=request.user.username)
+    #orderProducts = Order_Product.objects.all()
+    orderProducts = Order_Product.objects.select_related().filter(order__username=request.user.username).order_by('order').all()
+
+    if len(orderProducts) == 0:
+        return HttpResponse("購入履歴がないです")
 
     results = {}
     for orderProduct in orderProducts:
@@ -201,4 +215,14 @@ def order_history(request):
             results[order] = []
         results[order].append(orderProduct)
     return render(request, 'order_history.html',
-        {'results': results})
+        {'results': results, 'username': request.user.username})
+
+
+def login(request):
+    # セッションからログインしているカスタマIDを持ってくる
+    #customerId = 1
+    return redirect('../../../accounts/login/')
+
+
+def logout(request):
+    return HttpResponse("ログアウト")
