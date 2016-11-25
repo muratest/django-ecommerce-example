@@ -1,0 +1,13 @@
+<a href="../cart_list/">カートの中身を表示する</a>
+<a href="../cart_reset/">カートを空にする</a>
+<a href="../order/">注文する</a>
+
+{% if orders %}
+    {% for order in orders %}
+        <h1>注文日時：{{ order.ordered_at }}</h1>
+        <img src="../../media/{{ product.image }}" alt="" width="200" height="200" border="0" />
+        <a href="../cart_add/{{ product.id }}">カートに入れる</a>
+    {% endfor %}
+{% else %}
+    <h1>購入履歴がありません</h1>
+{% endif %}

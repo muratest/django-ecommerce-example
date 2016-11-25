@@ -88,3 +88,11 @@ def create_user(request):
 
     return render(request, 'registration/create_user_complete.html')
 
+def order_history(request):
+    # セッションからログインしているカスタマIDを持ってくる
+    customerId = 1
+    orders = Order.objects.get(Customer=customerId).select_related()
+    payments = Payment.objects.all() # 支払方法を全件取得
+
+    print(orders)
+    return rendere(request, 'order_history.html', {'orders': orders})
