@@ -1,6 +1,6 @@
 from django.http import HttpResponse
 from django.shortcuts import render
-from ecommerce.models import Product, Payment, Order
+from ecommerce.models import Product, Payment, Order, Order_Product, Customer
 
 
 def index(request):
@@ -26,14 +26,22 @@ def order_form(request):
 
 def order_execute(request):
     if request.method != 'POST':
-        return HttpResponse('Bad request', status_code=400)
+        return HttpResponse('Bad request')
 
     payment = Payment.objects.get(id=request.POST['payment'])
 
     # あとでセッションから一覧持ってくる
     products = Product.objects.all()
+    customer = Customer.objects.get(first_name='a', last_name='a')
+    payment = Payment.objects.get(id=int(request.POST['payment']))
 
-    Order.objects.create(payment=payment, products=products)
+    order = Order.objects.create(customer=customer, payment=payment)
+
+    for product in products:
+        # とりあえず1個
+        item_order = Order_Product(product=product, count=1, price=product.price, order=order)
+        item_order.save()
+
 
     return render(request, 'order_complete.html', {'products': 'products', 'payments': 'payments'})
 
