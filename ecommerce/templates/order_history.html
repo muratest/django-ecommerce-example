@@ -16,7 +16,7 @@
         {% for product in result %}
             <tr>
                 <td>{{ forloop.counter }}</td>
-                <td>{{ product.product.product.name }}</td>
+                <td>{{ product.product.name }}</td>
                 <td><img src="../../media/{{ product.product.image }}" alt="" width="200" height="200" border="0"></td>
                 <td>{{ product.price }}</td>
                 <td>{{ product.count }}</td>
