@@ -2,3 +2,8 @@
 
 うけつけました
 
+{% for product in products %}
+	<p>{{ product.name }}</p>
+{% endfor %}
+
+決済方法: {{ payment.name }}
