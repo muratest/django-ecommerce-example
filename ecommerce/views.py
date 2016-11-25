@@ -37,7 +37,7 @@ def cart_add(request, product_id):
 
   products = get_list_or_404(Product)
   context = {'products': products}
-  response = redirect('ecommerce/list/', context)
+  response = redirect('../../../ecommerce/cart_list/', context)
   return response
 
 
@@ -54,7 +54,7 @@ def cart_delete(request, product_id):
 
   products = get_list_or_404(Product)
   context = {'products': products}
-  response = redirect('/ecommerce/list/', context)
+  response = redirect('../../../ecommerce/cart_list/', context)
   return response
 
 
@@ -66,14 +66,19 @@ def cart_reset(request):
     request.session['cart'] = list()
   del request.session['cart']
 
-  products = get_list_or_404(Pruduct)
+  products = get_list_or_404(Product)
   context = {'products': products}
-  response = redirect('/ecommerce/list/', context)
+  response = redirect('../../../ecommerce/cart_list/', context)
+  return HttpResponse("カートの内容をクリアしました")
 
 @login_required
 def order_form(request):
     # あとでセッションから一覧持ってくる
-    products = Product.objects.all()
+    products = []
+
+    for item_id in request.session['cart']:
+        items = Product.objects.get(id=int(item_id)) 
+        products.append(items)
 
     # 決済方法一覧を取得
     payments = Payment.objects.all()
