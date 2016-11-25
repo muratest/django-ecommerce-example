@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_list_or_404
 from ecommerce.models import Product, Payment, Order, Order_Product, Customer
 
 from django.contrib.auth.decorators import login_required
@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 
 def index(request):
     return HttpResponse("Hello, world. You're at the ecommerce index.")
+
 
 def cart_list(request):
   """
@@ -22,6 +23,52 @@ def cart_list(request):
   context = {'products': products}
   return render(request, 'cart_list.html', context)
 
+
+def cart_add(request, product_id):
+  """
+  カートセッションに商品IDを追加
+  """
+
+  if not request.session.has_key('cart'):
+     request.session['cart'] = list()
+  cart = request.session['cart']
+  cart.append(product_id)
+  request.session['cart'] = cart
+
+  products = get_list_or_404(Product)
+  context = {'products': products}
+  response = redirect('ecommerce/list/', context)
+  return response
+
+
+def cart_delete(request, product_id):
+  """
+  カートセッションから商品IDを削除
+  """
+  if not request.session.has_key('cart'):
+    request.session['cart']
+  cart = request.session['cart']
+
+  cart = [item for item in cart if item is not str(product_id)]
+  request.session['cart'] = cart
+
+  products = get_list_or_404(Product)
+  context = {'products': products}
+  response = redirect('/ecommerce/list/', context)
+  return response
+
+
+def cart_reset(request):
+  """
+  カートセッション内の商品IDをすべて削除
+  """
+  if not request.session.has_key('cart'):
+    request.session['cart'] = list()
+  del request.session['cart']
+
+  products = get_list_or_404(Pruduct)
+  context = {'products': products}
+  response = redirect('/ecommerce/list/', context)
 
 @login_required
 def order_form(request):
