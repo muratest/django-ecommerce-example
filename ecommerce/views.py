@@ -19,7 +19,6 @@ def cart_list(request):
   cart = request.session['cart']
 
   products = Product.objects.filter(id__in=cart)
-
   context = {'products': products}
   return render(request, 'cart_list.html', context)
 

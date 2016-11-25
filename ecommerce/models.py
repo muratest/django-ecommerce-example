@@ -16,7 +16,7 @@ class Product(models.Model):
     name = models.CharField("商品名", max_length=30)
     description = models.CharField("商品説明", max_length=30, blank=True)
     price = models.IntegerField("価格")
-    image = models.FileField("商品画像", upload_to="", blank=True)
+    image = models.FileField("商品画像", upload_to="images/", blank=True)
     stock = models.IntegerField("在庫数")
     is_enabled = models.BooleanField("商品の販売状態", default=True)
     created_at = models.DateTimeField("作成日時", auto_now_add=True)
