@@ -5,4 +5,5 @@ urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^order/$', views.order_form, name='order_form'),
     url(r'^order_execute/$', views.order_execute, name='order_execute'),
+    url(r'^products/$', views.product_list, name='product_list'),
 ]
