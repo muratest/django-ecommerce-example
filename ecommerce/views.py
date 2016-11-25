@@ -36,3 +36,7 @@ def order_execute(request):
     Order.objects.create(payment=payment, products=products)
 
     return render(request, 'order_complete.html', {'products': 'products', 'payments': 'payments'})
+
+def product_list(request):
+    products = Product.objects.all()
+    return render(request, 'product_list.html', {'products': products})
