@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_list_or_404
 from ecommerce.models import Product, Payment, Order, Order_Product, Customer
 
 from django.contrib.auth.decorators import login_required
@@ -10,23 +10,122 @@ from django.contrib.auth.models import User
 def index(request):
     return HttpResponse("Hello, world. You're at the ecommerce index.")
 
-def cart_list(request):
-  """
-  カートに入っている商品情報を表示する
-  """
-  if not request.session.has_key('cart'):
-    request.session['cart'] = list()
-  cart = request.session['cart']
 
-  products = Product.objects.filter(id__in=cart)
-  context = {'products': products}
-  return render(request, 'cart_list.html', context)
+def cart_list(request):
+    """
+
+    カートに入っている商品情報を表示する
+
+    """
+
+    if not request.session.has_key('cart'):
+
+        request.session['cart'] = list()
+
+    cart = request.session['cart']
+
+
+    products = Product.objects.filter(id__in=cart)
+
+    context = {'products': products}
+
+    return render(request, 'cart_list.html', context)
+
+
+
+def cart_add(request, product_id):
+    """
+
+    カートセッションに商品IDを追加
+
+    """
+
+
+    if not request.session.has_key('cart'):
+
+        request.session['cart'] = list()
+
+    cart = request.session['cart']
+
+    cart.append(product_id)
+
+    request.session['cart'] = cart
+
+
+    products = get_list_or_404(Product)
+
+    context = {'products': products}
+
+    response = redirect('../../../ecommerce/cart_list/', context)
+
+    return response
+
+
+
+def cart_delete(request, product_id):
+    """
+
+    カートセッションから商品IDを削除
+
+    """
+
+    if not request.session.has_key('cart'):
+
+        request.session['cart']
+
+    cart = request.session['cart']
+
+
+    cart = [item for item in cart if item is not str(product_id)]
+
+    request.session['cart'] = cart
+
+
+    products = get_list_or_404(Product)
+
+    context = {'products': products}
+
+    response = redirect('../../../ecommerce/cart_list/', context)
+
+    return response
+
+
+
+def cart_reset(request):
+    """
+
+    カートセッション内の商品IDをすべて削除
+
+    """
+
+    if not request.session.has_key('cart'):
+
+        request.session['cart'] = list()
+
+    del request.session['cart']
+
+
+    products = get_list_or_404(Product)
+
+    context = {'products': products}
+
+    response = redirect('../../../ecommerce/cart_list/', context)
+
+    return HttpResponse("カートの内容をクリアしました")
+
 
 
 @login_required
 def order_form(request):
-    # あとでセッションから一覧持ってくる
-    products = Product.objects.all()
+
+    if 'cart' not in request.session:
+        return HttpResponse("カートの中身が空です")
+
+    products = []
+
+    for item_id in request.session['cart']:
+        items = Product.objects.get(id=int(item_id))
+        products.append(items)
 
     # 決済方法一覧を取得
     payments = Payment.objects.all()
@@ -60,9 +159,11 @@ def order_execute(request):
 
     return render(request, 'order_complete.html', {'products': products, 'payment': payment})
 
+
 def product_list(request):
     products = Product.objects.all()
     return render(request, 'product_list.html', {'products': products})
+
 
 def create_user_form(request):
 
@@ -91,8 +192,13 @@ def create_user(request):
 def order_history(request):
     # セッションからログインしているカスタマIDを持ってくる
     customerId = 1
-    orders = Order.objects.get(Customer=customerId).select_related()
-    payments = Payment.objects.all() # 支払方法を全件取得
+    orderProducts = Order_Product.objects.select_related().filter(order__customer=customerId).order_by('order').all()
 
-    print(orders)
-    return rendere(request, 'order_history.html', {'orders': orders})
+    results = {}
+    for orderProduct in orderProducts:
+        order = orderProduct.order.id
+        if order not in results:
+            results[order] = []
+        results[order].append(orderProduct)
+    return render(request, 'order_history.html',
+        {'results': results})

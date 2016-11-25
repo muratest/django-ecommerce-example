@@ -1,13 +1,33 @@
-<a href="../cart_list/">カートの中身を表示する</a>
-<a href="../cart_reset/">カートを空にする</a>
-<a href="../order/">注文する</a>
-
-{% if orders %}
-    {% for order in orders %}
-        <h1>注文日時：{{ order.ordered_at }}</h1>
-        <img src="../../media/{{ product.image }}" alt="" width="200" height="200" border="0" />
-        <a href="../cart_add/{{ product.id }}">カートに入れる</a>
+<div>
+{% if results %}
+    <div>
+    {% for key, result in results.items %}
+    <p>注文日時：{{ result.0.order.ordered_at|date:"Y/m/d H:i:s" }}</p>
+    <p>決済方法：{{ result.0.order.payment }}</p>
+    <table border="1">
+        <tr>
+            <th>連番</th>
+            <th>商品名</th>
+            <th>商品画像</th>
+            <th>単価</th>
+            <th>数量</th>
+        </tr>
+        {% for product in result %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ product.product.product.name }}</td>
+                <td><img src="../../media/{{ product.product.image }}" alt="" width="200" height="200" border="0"></td>
+                <td>{{ product.price }}</td>
+                <td>{{ product.count }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <div>
+    <hr>
     {% endfor %}
+
+
 {% else %}
     <h1>購入履歴がありません</h1>
 {% endif %}
+<div>
