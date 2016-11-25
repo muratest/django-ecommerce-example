@@ -11,6 +11,7 @@ def index(request):
     return HttpResponse("Hello, world. You're at the ecommerce index.")
 
 
+@login_required
 def order_form(request):
     # あとでセッションから一覧持ってくる
     products = Product.objects.all()
@@ -73,5 +74,5 @@ def create_user(request):
     user = User.objects.create_user(username, '', password)
     user.save()
 
-    return render_to_response('registration/create_user_complete.html')
+    return render(request, 'registration/create_user_complete.html')
 
