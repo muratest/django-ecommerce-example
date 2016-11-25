@@ -17,6 +17,8 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from ecommerce.views import create_user_form, create_user
+from django.conf.urls.static import static
+from ecommerce_website import settings 
 
 urlpatterns = [
     url(r'^ecommerce/', include('ecommerce.urls')),
